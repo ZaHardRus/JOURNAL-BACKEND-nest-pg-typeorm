@@ -1,8 +1,18 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, Query} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import {searchArticleDto} from "./dto/search-article.dto";
+import { searchArticleDto } from './dto/search-article.dto';
+import { PaginationArticleDto } from './dto/pagination-article.dto';
 
 @Controller('articles')
 export class ArticleController {
@@ -23,15 +33,14 @@ export class ArticleController {
   //   return this.articleService.popular(skip);
   // }
   @Get(`/popular`)
-  getPopular() {
-    return this.articleService.popular();
+  getPopular(@Query() dto: PaginationArticleDto) {
+    return this.articleService.popular(dto);
   }
 
   @Get(`/search`)
-  search(@Query() dto:searchArticleDto) {
+  search(@Query() dto: searchArticleDto) {
     return this.articleService.search(dto);
   }
-
 
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -5,7 +5,7 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
-  getUser(id:number): string {
+  getUser(id: number): string {
     return `Hello User:${id}`;
   }
 }
