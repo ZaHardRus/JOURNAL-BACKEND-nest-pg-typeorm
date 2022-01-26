@@ -51,6 +51,7 @@ export class UsersService {
 
   async search(dto: SearchUserDto) {
     const qb = this.repository.createQueryBuilder('su');
+    console.log(dto);
     qb.limit(+dto.limit || 10);
     qb.offset(+dto.limit * +dto.page - +dto.limit || 0);
 
@@ -68,13 +69,17 @@ export class UsersService {
       id: `%${dto.id}%`,
       fullName: `%${dto.fullName}%`,
     });
+
     const [items, total] = await qb.getManyAndCount();
     return { items, total };
   }
 
   async getFollowers(id: number) {
-    const ids = await this.repository.findOne(+id);
-    return await this.repository.findByIds(ids.followers);
+    // const ids = await this.repository.findOne(+id);
+    // return await this.repository.findByIds(ids.followers);
+    const user = await this.repository.findOne(+id);
+    const ids = user.followers;
+    return this.repository.findByIds(ids);
   }
 
   remove(id: number) {

@@ -47,7 +47,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -58,7 +58,7 @@ export class UsersController {
   //   return this.usersService.update(+id, updateUserDto);
   // }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get(':id/followers')
   getFollowers(@Param('id') id: number) {
     return this.usersService.getFollowers(id);
