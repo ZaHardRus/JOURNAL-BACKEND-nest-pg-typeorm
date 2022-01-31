@@ -38,7 +38,6 @@ export class AuthService {
     async registration(dto: CreateUserDto) {
         try {
             const {password, ...user} = await this.usersService.create(dto);
-            console.log(user)
             return user;
         } catch (e) {
             throw new ForbiddenException('Sorry((');

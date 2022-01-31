@@ -51,7 +51,6 @@ export class UsersService {
 
   async search(dto: SearchUserDto) {
     const qb = this.repository.createQueryBuilder('su');
-    console.log(dto);
     qb.limit(+dto.limit || 10);
     qb.offset(+dto.limit * +dto.page - +dto.limit || 0);
 
