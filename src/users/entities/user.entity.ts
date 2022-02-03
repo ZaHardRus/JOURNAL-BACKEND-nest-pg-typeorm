@@ -1,4 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CommentEntity } from 'src/comment/entities/comment.entity';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {ArticleEntity} from "../../article/entities/article.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -18,4 +20,11 @@ export class UserEntity {
 
   @Column()
   password: string;
+
+  @OneToMany(() => ArticleEntity, (article) => article.user, {
+    eager: false,
+    nullable: true,
+  })
+  comments: ArticleEntity[];
+
 }

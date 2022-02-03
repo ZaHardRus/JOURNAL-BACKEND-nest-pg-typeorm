@@ -28,7 +28,6 @@ export class AuthService {
     }
 
     async login(user: UserEntity) {
-        console.log(user,123456)
         const {password, ...userData} = user;
         return {
             ...userData,
