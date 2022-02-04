@@ -21,6 +21,9 @@ export class UserEntity {
   @Column()
   password: string;
 
+  @Column({nullable:true})
+  avatarUrl: string;
+
   @OneToMany(() => ArticleEntity, (article) => article.user, {
     eager: false,
     nullable: true,

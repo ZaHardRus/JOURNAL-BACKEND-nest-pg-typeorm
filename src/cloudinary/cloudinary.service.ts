@@ -1,4 +1,4 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {ForbiddenException, Inject, Injectable} from '@nestjs/common';
 import {UploadApiErrorResponse, UploadApiResponse, v2} from 'cloudinary';
 import toStream = require('buffer-to-stream');
 
@@ -8,18 +8,28 @@ export class CloudinaryService {
     }
 
     async uploadImage(file: Express.Multer.File): Promise<any | UploadApiErrorResponse> {
+
         const data = new Promise((resolve, reject) => {
             const upload = v2.uploader.upload_stream((error, result) => {
-                if (error) return reject(error);
+                if (error) {
+                    reject(error)
+                }
                 resolve(result);
             });
-            toStream(file.buffer).pipe(upload);
-        });
-        return data.then(data=>data['secure_url']).then(data=>({
-            "success" : 1,
-            "file": {
-                "url" : data,
+            if(upload){
+                toStream(file.buffer).pipe(upload);
             }
+
+        });
+        return data.then(data => data['secure_url']).then(data => ({
+            "success": 1,
+            "file": {
+                "url": data,
+            }
+        })).catch(e => ({
+            "success": 0,
+            "error": "invalid file"
         }))
+
     }
 }
