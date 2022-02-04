@@ -40,7 +40,7 @@ export class UsersService {
                 'article.userId = u.id'
             )
             .getOne();
-        qb['articles'].map(el=>delete el['body'])
+        //qb['articles'].map(el=>delete el['body'])
         return qb
     }
 
