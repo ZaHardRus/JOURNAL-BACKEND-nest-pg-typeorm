@@ -63,4 +63,17 @@ export class ArticleController {
     remove(@User() userId: number, @Param('id') id: string) {
         return this.articleService.remove(+id, userId);
     }
+
+    @Patch(':id/like')
+    //todo:проверить можно ли follow + dto
+    @UseGuards(JwtAuthGuard)
+    like(@User() userId: number, @Param('id') articleId: string) {
+        return this.articleService.like(+articleId, userId);
+    }
+    @Patch(':id/dislike')
+    //todo:проверить можно ли follow + dto
+    @UseGuards(JwtAuthGuard)
+    dislike(@User() userId: number, @Param('id') articleId: string) {
+        return this.articleService.dislike(+articleId, userId);
+    }
 }

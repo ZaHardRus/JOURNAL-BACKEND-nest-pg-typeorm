@@ -65,6 +65,12 @@ export class UsersService {
         await this.repository.save(user);
         return user;
     }
+    async unFollow(id: string, dto: FollowUserDto) {
+        const user = await this.repository.findOne(+id);
+        user.followers = user.followers.filter(el=>el !== dto.id);
+        await this.repository.save(user);
+        return user;
+    }
 
     async search(dto: SearchUserDto) {
         const qb = this.repository.createQueryBuilder('su');

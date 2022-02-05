@@ -14,7 +14,7 @@ export class ArticleService {
     constructor(
         @InjectRepository(ArticleEntity)
         private repository: Repository<ArticleEntity>,
-        private commentsService:CommentService
+        private commentsService: CommentService
     ) {
     }
 
@@ -119,5 +119,27 @@ export class ArticleService {
         }
         await this.commentsService.removeByArticle(id)
         return await this.repository.delete(id);
+    }
+
+    async like(articleId, userId) {
+        const article = await this.repository.findOne(articleId);
+        if (article.likes.find(el=>el===userId)) {
+            article.likes = article.likes.filter(el => el !== userId);
+        } else {
+            article.likes = [...article.likes, userId];
+        }
+        await this.repository.save(article);
+        return article;
+    }
+
+    async dislike(articleId, userId) {
+        const article = await this.repository.findOne(articleId);
+        if (article.dislikes.find(el=>el===userId)) {
+            article.dislikes = [...article.dislikes.filter(el => el !== userId)];
+        } else {
+            article.dislikes = [...article.dislikes, userId];
+        }
+        await this.repository.save(article);
+        return article;
     }
 }

@@ -6,6 +6,12 @@ export class ArticleEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column('int', { array: true, default: [] })
+    likes: number[];
+
+    @Column('int', { array: true, default: [] })
+    dislikes: number[];
+
     @Column()
     title: string;
 
