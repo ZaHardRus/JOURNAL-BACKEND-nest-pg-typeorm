@@ -1,4 +1,4 @@
-import {ForbiddenException, Injectable, NotFoundException} from '@nestjs/common';
+import {ForbiddenException, Inject, Injectable, NotFoundException} from '@nestjs/common';
 import {CreateArticleDto} from './dto/create-article.dto';
 import {UpdateArticleDto} from './dto/update-article.dto';
 import {InjectRepository} from '@nestjs/typeorm';
@@ -6,12 +6,15 @@ import {ArticleEntity} from './entities/article.entity';
 import {Repository} from 'typeorm';
 import {searchArticleDto} from './dto/search-article.dto';
 import {PaginationArticleDto} from './dto/pagination-article.dto';
+import {CommentEntity} from "../comment/entities/comment.entity";
+import {CommentService} from "../comment/comment.service";
 
 @Injectable()
 export class ArticleService {
     constructor(
         @InjectRepository(ArticleEntity)
         private repository: Repository<ArticleEntity>,
+        private commentsService:CommentService
     ) {
     }
 
@@ -40,7 +43,7 @@ export class ArticleService {
         await this.repository
             .createQueryBuilder('articles')
             .whereInIds(id)
-            .leftJoinAndSelect('articles.user','user')
+            .leftJoinAndSelect('articles.user', 'user')
             .update()
             .set({views: () => 'views+1'})
             .execute();
@@ -111,9 +114,10 @@ export class ArticleService {
         if (!article) {
             throw new NotFoundException('Статья не найдена');
         }
-        if(article.user.id !== userId){
+        if (article.user.id !== userId) {
             throw new ForbiddenException('Нет доступа');
         }
-        return this.repository.delete(id);
+        await this.commentsService.removeByArticle(id)
+        return await this.repository.delete(id);
     }
 }

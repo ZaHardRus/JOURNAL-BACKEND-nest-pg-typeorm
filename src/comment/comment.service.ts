@@ -45,4 +45,13 @@ export class CommentService {
     remove(id: number) {
         return this.repository.delete(id);
     }
+    async removeByArticle(id: number) {
+        const arr = await this.repository.createQueryBuilder('c')
+            .where('c.articleId = :id',{id})
+            .getMany()
+        await arr.forEach(el=>this.remove(el.id))
+        return {
+            status:"success"
+        }
+    }
 }

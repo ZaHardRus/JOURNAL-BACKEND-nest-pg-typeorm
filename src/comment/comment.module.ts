@@ -8,5 +8,6 @@ import { CommentEntity } from './entities/comment.entity';
   imports: [TypeOrmModule.forFeature([CommentEntity])],
   controllers: [CommentController],
   providers: [CommentService],
+  exports:[CommentService]
 })
 export class CommentModule {}
