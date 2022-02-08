@@ -51,24 +51,39 @@ export class UsersService {
     update(id: number, updateUserDto: UpdateUserDto) {
         return this.repository.update(id, updateUserDto);
     }
-
-    // async follow(id: string, dto: FollowUserDto) {
-    //   const userFollowers = await this.repository.findOne(+id);
-    //   const newFollowers = userFollowers.followers;
-    //   return await this.repository.update(id, {
-    //     followers: [...newFollowers, dto.id],
-    //   });
-    // }
+    //todo: отрефакторить!!!
     async follow(id: string, dto: FollowUserDto) {
         const user = await this.repository.findOne(+id);
-        user.followers = [...user.followers, dto.id];
+        if(user.following.some(el=>el===dto.id)){
+            return
+        }
+        user.following = [...user.following, dto.id];
         await this.repository.save(user);
+
+        const me = await this.repository.findOne(dto.id)
+        if(me.followers.some(el=>el===dto.id)){
+            return
+        }
+        me.followers = [...me.followers, +id];
+        await this.repository.save(me);
+
         return user;
     }
     async unFollow(id: string, dto: FollowUserDto) {
         const user = await this.repository.findOne(+id);
-        user.followers = user.followers.filter(el=>el !== dto.id);
+        if(!user.following.some(el=>el===dto.id)){
+            return
+        }
+        user.following = user.following.filter(el=>el !== dto.id);
         await this.repository.save(user);
+
+        const me = await this.repository.findOne(dto.id)
+        if(!me.followers.some(el=>el===+id)){
+            return
+        }
+        me.followers = [...me.followers.filter(el=>el !== +id)];
+        await this.repository.save(me);
+
         return user;
     }
 
@@ -100,7 +115,7 @@ export class UsersService {
         // const ids = await this.repository.findOne(+id);
         // return await this.repository.findByIds(ids.followers);
         const user = await this.repository.findOne(+id);
-        const ids = user.followers;
+        const ids = user.following;
         return this.repository.findByIds(ids);
     }
 

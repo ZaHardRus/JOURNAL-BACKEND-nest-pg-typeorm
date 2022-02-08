@@ -16,6 +16,9 @@ export class UserEntity {
   email: string;
 
   @Column('int', { array: true, default: [] })
+  following: number[];
+
+  @Column('int', { array: true, default: [] })
   followers: number[];
 
   @Column()

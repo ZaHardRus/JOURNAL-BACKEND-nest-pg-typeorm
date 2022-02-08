@@ -1,13 +1,4 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    Query, UseGuards,
-} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards,} from '@nestjs/common';
 import {ArticleService} from './article.service';
 import {CreateArticleDto} from './dto/create-article.dto';
 import {UpdateArticleDto} from './dto/update-article.dto';
@@ -15,7 +6,6 @@ import {searchArticleDto} from './dto/search-article.dto';
 import {PaginationArticleDto} from './dto/pagination-article.dto';
 import {JwtAuthGuard} from 'src/auth/guard/jwt-auth.guard';
 import {User} from "../Decorators/user.decorator";
-import {UserEntity} from "../users/entities/user.entity";
 
 @Controller('articles')
 export class ArticleController {
@@ -33,10 +23,6 @@ export class ArticleController {
         return this.articleService.findAll();
     }
 
-    // @Get(`/popular`)
-    // getPopular(@Query('skip') skip:number) {
-    //   return this.articleService.popular(skip);
-    // }
     @Get(`/popular`)
     getPopular(@Query() dto: PaginationArticleDto) {
         return this.articleService.popular(dto);
@@ -70,10 +56,16 @@ export class ArticleController {
     like(@User() userId: number, @Param('id') articleId: string) {
         return this.articleService.like(+articleId, userId);
     }
+
     @Patch(':id/dislike')
     //todo:проверить можно ли follow + dto
     @UseGuards(JwtAuthGuard)
     dislike(@User() userId: number, @Param('id') articleId: string) {
         return this.articleService.dislike(+articleId, userId);
     }
+
+    // @Get(`/popular`)
+    // getPopular(@Query('skip') skip:number) {
+    //   return this.articleService.popular(skip);
+    // }
 }

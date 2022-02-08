@@ -10,7 +10,6 @@ export class CommentController {
     constructor(private readonly commentService: CommentService) {
     }
 
-
     @Post()
     @UseGuards(JwtAuthGuard)
     create(@User() userId: number, @Body() createCommentDto: CreateCommentDto) {
