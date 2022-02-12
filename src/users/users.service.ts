@@ -112,8 +112,11 @@ export class UsersService {
     }
 
     async getFollowers(id: number) {
-        // const ids = await this.repository.findOne(+id);
-        // return await this.repository.findByIds(ids.followers);
+        const user = await this.repository.findOne(+id);
+        const ids = user.followers;
+        return this.repository.findByIds(ids);
+    }
+    async getFollowing(id: number) {
         const user = await this.repository.findOne(+id);
         const ids = user.following;
         return this.repository.findByIds(ids);

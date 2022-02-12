@@ -8,13 +8,16 @@ import {searchArticleDto} from './dto/search-article.dto';
 import {PaginationArticleDto} from './dto/pagination-article.dto';
 import {CommentEntity} from "../comment/entities/comment.entity";
 import {CommentService} from "../comment/comment.service";
+import {UserEntity} from "../users/entities/user.entity";
 
 @Injectable()
 export class ArticleService {
     constructor(
         @InjectRepository(ArticleEntity)
         private repository: Repository<ArticleEntity>,
-        private commentsService: CommentService
+        private commentsService: CommentService,
+        @InjectRepository(UserEntity)
+        private userRepository: Repository<UserEntity>
     ) {
     }
 
@@ -58,10 +61,10 @@ export class ArticleService {
     //   });
     // }
     async popular(dto: PaginationArticleDto) {
-        const qb = this.repository.createQueryBuilder('articles');
+        const qb = this.repository.createQueryBuilder('sa');
         qb.leftJoinAndSelect('sa.user', 'user');
-        qb.orderBy('views', 'DESC');
-        qb.limit(+dto.limit);
+        qb.orderBy('likes', 'DESC');
+        qb.limit(+dto.limit || 10);
         qb.offset(+dto.limit * +dto.page - +dto.limit || 0);
         const [articles, total] = await qb.getManyAndCount();
         return {
@@ -123,7 +126,7 @@ export class ArticleService {
 
     async like(articleId, userId) {
         const article = await this.repository.findOne(articleId);
-        if (article.likes.find(el=>el===userId)) {
+        if (article.likes.find(el => el === userId)) {
             article.likes = article.likes.filter(el => el !== userId);
         } else {
             article.likes = [...article.likes, userId];
@@ -134,12 +137,20 @@ export class ArticleService {
 
     async dislike(articleId, userId) {
         const article = await this.repository.findOne(articleId);
-        if (article.dislikes.find(el=>el===userId)) {
+        if (article.dislikes.find(el => el === userId)) {
             article.dislikes = [...article.dislikes.filter(el => el !== userId)];
         } else {
             article.dislikes = [...article.dislikes, userId];
         }
         await this.repository.save(article);
         return article;
+    }
+
+    async getFeed(id: number) {
+        const {following} = await this.userRepository.findOne(id)
+        return await this.repository.createQueryBuilder('articles')
+            .leftJoinAndSelect('articles.user','user')
+            .where('articles.user IN (:...following)', {following})
+            .getMany()
     }
 }

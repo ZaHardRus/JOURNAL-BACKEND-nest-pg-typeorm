@@ -23,6 +23,12 @@ export class ArticleController {
         return this.articleService.findAll();
     }
 
+    @Get('/feed')
+    @UseGuards(JwtAuthGuard)
+    getFeed(@User() userId: number) {
+        return this.articleService.getFeed(userId);
+    }
+
     @Get(`/popular`)
     getPopular(@Query() dto: PaginationArticleDto) {
         return this.articleService.popular(dto);

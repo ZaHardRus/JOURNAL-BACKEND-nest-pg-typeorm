@@ -37,13 +37,11 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  //todo:проверить можно ли :id/follow
   @Patch('follow')
   follow(@Request() req, @Body() dto: FollowUserDto) {
     return this.usersService.follow(req.user.id, dto);
   }
   @UseGuards(JwtAuthGuard)
-  //todo:проверить можно ли :id/follow
   @Patch('unfollow')
   unFollow(@Request() req, @Body() dto: FollowUserDto) {
     return this.usersService.unFollow(req.user.id, dto);
@@ -59,10 +57,13 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  //@UseGuards(JwtAuthGuard)
   @Get(':id/followers')
   getFollowers(@Param('id') id: number) {
     return this.usersService.getFollowers(id);
+  }
+  @Get(':id/following')
+  getFollowing(@Param('id') id: number) {
+    return this.usersService.getFollowing(id);
   }
 
   @Delete(':id')
