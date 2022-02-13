@@ -6,6 +6,7 @@ import {searchArticleDto} from './dto/search-article.dto';
 import {PaginationArticleDto} from './dto/pagination-article.dto';
 import {JwtAuthGuard} from 'src/auth/guard/jwt-auth.guard';
 import {User} from "../Decorators/user.decorator";
+import {PaginationArticleAllDto} from "./dto/pagination-articleAll.dto";
 
 @Controller('articles')
 export class ArticleController {
@@ -19,8 +20,13 @@ export class ArticleController {
     }
 
     @Get()
-    findAll() {
-        return this.articleService.findAll();
+    findAll(@Query() query: PaginationArticleAllDto) {
+        return this.articleService.findAll(query);
+    }
+
+    @Get('/u')
+    findAllByUserId(@Query() query: { PaginationArticleAllDto, userId: number }) {
+        return this.articleService.findAllByUserId(query);
     }
 
     @Get('/feed')

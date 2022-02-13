@@ -14,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FollowUserDto } from './dto/follow-user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { SearchUserDto } from './dto/search-user.dto';
+import {PaginationUserDto} from "./dto/pagination-user.dto";
 
 @Controller('users')
 export class UsersController {
@@ -48,8 +49,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query:PaginationUserDto) {
+    return this.usersService.findAll(query);
   }
 
   @Get(':id')

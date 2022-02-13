@@ -3,7 +3,7 @@ import {CreateArticleDto} from './dto/create-article.dto';
 import {UpdateArticleDto} from './dto/update-article.dto';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ArticleEntity} from './entities/article.entity';
-import {Repository} from 'typeorm';
+import {Like, Repository} from 'typeorm';
 import {searchArticleDto} from './dto/search-article.dto';
 import {PaginationArticleDto} from './dto/pagination-article.dto';
 import {CommentEntity} from "../comment/entities/comment.entity";
@@ -32,10 +32,31 @@ export class ArticleService {
         });
     }
 
-    findAll() {
-        return this.repository.find({
-            order: {createdAt: 'DESC'},
+    findAll(query) {
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+        const keyword = query.keyword || ''
+        return this.repository.findAndCount({
+            where: {title: Like('%' + keyword + '%')}, order: {createdAt: "DESC"},
+            take: take,
+            skip: skip,
         });
+    }
+    async findAllByUserId(query) {
+        const userId = query.userId
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+
+        const [data,count] =  await this.repository.findAndCount({
+            where:{user:userId},
+            order: {createdAt: "DESC"},
+            take: take,
+            skip: skip,
+            relations:['user'],
+        });
+        return data
     }
 
     async findOne(id: number) {

@@ -1,6 +1,7 @@
 import { CommentEntity } from 'src/comment/entities/comment.entity';
 import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {ArticleEntity} from "../../article/entities/article.entity";
+import {Exclude} from "class-transformer";
 
 @Entity('users')
 export class UserEntity {
@@ -32,5 +33,10 @@ export class UserEntity {
     nullable: true,
   })
   comments: ArticleEntity[];
+
+  toJSON () {
+    delete this.password;
+    return this;
+  }
 
 }
