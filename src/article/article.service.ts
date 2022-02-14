@@ -9,6 +9,7 @@ import {PaginationArticleDto} from './dto/pagination-article.dto';
 import {CommentEntity} from "../comment/entities/comment.entity";
 import {CommentService} from "../comment/comment.service";
 import {UserEntity} from "../users/entities/user.entity";
+import {PaginationArticleAllDto} from "./dto/pagination-articleAll.dto";
 
 @Injectable()
 export class ArticleService {
@@ -37,24 +38,26 @@ export class ArticleService {
         const page = query.page || 1;
         const skip = (page - 1) * take;
         const keyword = query.keyword || ''
+
         return this.repository.findAndCount({
             where: {title: Like('%' + keyword + '%')}, order: {createdAt: "DESC"},
             take: take,
             skip: skip,
         });
     }
+
     async findAllByUserId(query) {
         const userId = query.userId
         const take = query.take || 10
         const page = query.page || 1;
         const skip = (page - 1) * take;
 
-        const [data,count] =  await this.repository.findAndCount({
-            where:{user:userId},
+        const [data, count] = await this.repository.findAndCount({
+            where: {user: userId},
             order: {createdAt: "DESC"},
             take: take,
             skip: skip,
-            relations:['user'],
+            relations: ['user'],
         });
         return data
     }
@@ -81,17 +84,18 @@ export class ArticleService {
     //     skip: skip
     //   });
     // }
-    async popular(dto: PaginationArticleDto) {
-        const qb = this.repository.createQueryBuilder('sa');
-        qb.leftJoinAndSelect('sa.user', 'user');
-        qb.orderBy('likes', 'DESC');
-        qb.limit(+dto.limit || 10);
-        qb.offset(+dto.limit * +dto.page - +dto.limit || 0);
-        const [articles, total] = await qb.getManyAndCount();
-        return {
-            articles,
-            total,
-        };
+    async popular(query: PaginationArticleAllDto) {
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+
+        return await this.repository.createQueryBuilder('articles')
+            .leftJoinAndSelect('articles.user', 'user')
+            .orderBy('articles.likes', "DESC")
+            .take(take)
+            .skip(skip)
+            .getManyAndCount()
+
     }
 
     async search(dto: searchArticleDto) {
@@ -167,11 +171,18 @@ export class ArticleService {
         return article;
     }
 
-    async getFeed(id: number) {
+    async getFeed(id: number, query: PaginationArticleAllDto) {
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+
         const {following} = await this.userRepository.findOne(id)
         return await this.repository.createQueryBuilder('articles')
-            .leftJoinAndSelect('articles.user','user')
+            .leftJoinAndSelect('articles.user', 'user')
             .where('articles.user IN (:...following)', {following})
-            .getMany()
+            .orderBy('articles.createdAt', "DESC")
+            .take(take)
+            .skip(skip)
+            .getManyAndCount()
     }
 }

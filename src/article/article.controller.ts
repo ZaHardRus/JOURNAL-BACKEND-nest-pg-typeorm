@@ -31,13 +31,13 @@ export class ArticleController {
 
     @Get('/feed')
     @UseGuards(JwtAuthGuard)
-    getFeed(@User() userId: number) {
-        return this.articleService.getFeed(userId);
+    getFeed(@User() userId: number, @Query() query: PaginationArticleAllDto) {
+        return this.articleService.getFeed(userId, query);
     }
 
     @Get(`/popular`)
-    getPopular(@Query() dto: PaginationArticleDto) {
-        return this.articleService.popular(dto);
+    getPopular(@Query() query: PaginationArticleAllDto) {
+        return this.articleService.popular(query);
     }
 
     @Get(`/search`)

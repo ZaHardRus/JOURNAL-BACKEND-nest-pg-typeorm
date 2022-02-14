@@ -3,12 +3,12 @@ import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {InjectRepository} from '@nestjs/typeorm';
 import {UserEntity} from './entities/user.entity';
-import {Like, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {LoginUserDto} from './dto/login-user.dto';
 import {FollowUserDto} from './dto/follow-user.dto';
 import {SearchUserDto} from './dto/search-user.dto';
 import {ArticleEntity} from "../article/entities/article.entity";
-import {PaginationUserDto} from "./dto/pagination-user.dto";
+import {PaginationUsersAllDto} from "./dto/pagination-usersAll.dto";
 
 @Injectable()
 export class UsersService {
@@ -22,21 +22,15 @@ export class UsersService {
         return this.repository.save(createUserDto);
     }
 
-    async findAll(query: PaginationUserDto) {
+    async findAll(query: PaginationUsersAllDto) {
         const take = query.take || 10
         const page = query.page || 1;
         const skip = (page - 1) * take;
-        const keyword = query.keyword || ''
 
-        const [data, count] = await this.repository.findAndCount({
-            where: {fullName: Like('%' + keyword + '%')}, order: {fullName: "DESC"},
+        return await this.repository.find({
             take: take,
             skip: skip
-        });
-        return [data.map(el => {
-            const {password, ...user} = el
-            return user
-        }), count]
+        })
     }
 
     async findOne(id: number) {
@@ -125,16 +119,30 @@ export class UsersService {
         return {items, total};
     }
 
-    async getFollowers(id: number) {
+    async getFollowers(id: number, query: PaginationUsersAllDto) {
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+
         const user = await this.repository.findOne(+id);
         const ids = user.followers;
-        return this.repository.findByIds(ids);
+        return await this.repository.findByIds(ids, {
+            take: take,
+            skip: skip
+        })
     }
 
-    async getFollowing(id: number) {
+    async getFollowing(id: number, query: PaginationUsersAllDto) {
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+
         const user = await this.repository.findOne(+id);
         const ids = user.following;
-        return this.repository.findByIds(ids);
+        return await this.repository.findByIds(ids, {
+            take: take,
+            skip: skip
+        })
     }
 
     remove(id: number) {

@@ -15,6 +15,8 @@ import { FollowUserDto } from './dto/follow-user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { SearchUserDto } from './dto/search-user.dto';
 import {PaginationUserDto} from "./dto/pagination-user.dto";
+import {PaginationArticleAllDto} from "../article/dto/pagination-articleAll.dto";
+import {PaginationUsersAllDto} from "./dto/pagination-usersAll.dto";
 
 @Controller('users')
 export class UsersController {
@@ -49,7 +51,7 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() query:PaginationUserDto) {
+  findAll(@Query() query:PaginationUsersAllDto) {
     return this.usersService.findAll(query);
   }
 
@@ -59,12 +61,12 @@ export class UsersController {
   }
 
   @Get(':id/followers')
-  getFollowers(@Param('id') id: number) {
-    return this.usersService.getFollowers(id);
+  getFollowers(@Param('id') id: number, @Query() query:PaginationUsersAllDto) {
+    return this.usersService.getFollowers(id,query);
   }
   @Get(':id/following')
-  getFollowing(@Param('id') id: number) {
-    return this.usersService.getFollowing(id);
+  getFollowing(@Param('id') id: number, @Query() query:PaginationUsersAllDto) {
+    return this.usersService.getFollowing(id,query);
   }
 
   @Delete(':id')
