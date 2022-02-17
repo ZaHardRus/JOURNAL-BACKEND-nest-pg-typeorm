@@ -3,7 +3,7 @@ import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {InjectRepository} from '@nestjs/typeorm';
 import {UserEntity} from './entities/user.entity';
-import {Repository} from 'typeorm';
+import {ILike, Like, Repository} from 'typeorm';
 import {LoginUserDto} from './dto/login-user.dto';
 import {FollowUserDto} from './dto/follow-user.dto';
 import {SearchUserDto} from './dto/search-user.dto';
@@ -26,11 +26,21 @@ export class UsersService {
         const take = query.take || 10
         const page = query.page || 1;
         const skip = (page - 1) * take;
+        const keyword = query.keyword
 
-        return await this.repository.find({
+        if (keyword) {
+            return await this.repository.findAndCount({
+                where: {fullName: ILike('%' + keyword + '%')},
+                take: take,
+                skip: skip
+            })
+        }
+        return await this.repository.findAndCount({
             take: take,
             skip: skip
         })
+
+
     }
 
     async findOne(id: number) {
@@ -95,29 +105,27 @@ export class UsersService {
         return user;
     }
 
-    async search(dto: SearchUserDto) {
-        const qb = this.repository.createQueryBuilder('su');
-        qb.limit(+dto.limit || 10);
-        qb.offset(+dto.limit * +dto.page - +dto.limit || 0);
-
-        if (dto.email) {
-            qb.andWhere(`su.email ILIKE :email`);
-        }
-        if (dto.id) {
-            qb.andWhere(`su.id ILIKE :id`);
-        }
-        if (dto.fullName) {
-            qb.andWhere(`su.fullName ILIKE :fullName`);
-        }
-        qb.setParameters({
-            email: `%${dto.email}%`,
-            id: `%${dto.id}%`,
-            fullName: `%${dto.fullName}%`,
-        });
-
-        const [items, total] = await qb.getManyAndCount();
-        return {items, total};
-    }
+    // async search(query: SearchUserDto) {
+    //     const qb = this.repository.createQueryBuilder('su');
+    //     qb.limit(+query.take || 10);
+    //     qb.offset(+query.take * +query.page - +query.take || 0);
+    //     if (query.email) {
+    //         qb.andWhere(`su.email ILIKE :email`);
+    //     }
+    //     if (query.id) {
+    //         qb.andWhere(`su.id ILIKE :id`);
+    //     }
+    //     if (query.fullName) {
+    //         qb.andWhere(`su.fullName ILIKE :fullName`);
+    //     }
+    //     qb.setParameters({
+    //         email: `%${query.email}%`,
+    //         id: `%${query.id}%`,
+    //         fullName: `%${query.fullName}%`,
+    //     });
+    //
+    //     return await qb.getManyAndCount();
+    // }
 
     async getFollowers(id: number, query: PaginationUsersAllDto) {
         const take = query.take || 10
@@ -126,10 +134,11 @@ export class UsersService {
 
         const user = await this.repository.findOne(+id);
         const ids = user.followers;
-        return await this.repository.findByIds(ids, {
+        const followers =  await this.repository.findByIds(ids, {
             take: take,
             skip: skip
         })
+        return [followers,ids.length]
     }
 
     async getFollowing(id: number, query: PaginationUsersAllDto) {
@@ -139,10 +148,11 @@ export class UsersService {
 
         const user = await this.repository.findOne(+id);
         const ids = user.following;
-        return await this.repository.findByIds(ids, {
+        const following = await this.repository.findByIds(ids, {
             take: take,
             skip: skip
         })
+        return [following,ids.length]
     }
 
     remove(id: number) {

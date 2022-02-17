@@ -22,10 +22,10 @@ import {PaginationUsersAllDto} from "./dto/pagination-usersAll.dto";
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('search')
-  searchUser(@Query() dto: SearchUserDto) {
-    return this.usersService.search(dto);
-  }
+  // @Get('search')
+  // searchUser(@Query() query: SearchUserDto) {
+  //   return this.usersService.search(query);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')

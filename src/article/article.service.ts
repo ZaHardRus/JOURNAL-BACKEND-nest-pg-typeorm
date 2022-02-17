@@ -78,12 +78,6 @@ export class ArticleService {
         return this.repository.findOne(id);
     }
 
-    // async popular(skip:number) {
-    //   return this.repository.find({
-    //     order:{views:'DESC'},
-    //     skip: skip
-    //   });
-    // }
     async popular(query: PaginationArticleAllDto) {
         const take = query.take || 10
         const page = query.page || 1;
@@ -101,7 +95,7 @@ export class ArticleService {
     async search(dto: searchArticleDto) {
         const qb = this.repository.createQueryBuilder('sa');
         qb.limit(dto.limit || 10);
-        qb.offset(+dto.limit * +dto.page - +dto.limit || 0);
+        qb.offset((+dto.limit * +dto.page) - +dto.limit || 0);
         qb.leftJoinAndSelect('sa.user', 'user');
 
         if (dto.body) {
