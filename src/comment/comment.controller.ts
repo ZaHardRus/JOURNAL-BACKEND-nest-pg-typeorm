@@ -17,8 +17,13 @@ export class CommentController {
     }
 
     @Get()
-    findAll(@Query() query: { articleId: number }) {
+    findAll(@Query() query: { articleId: number}) {
         return this.commentService.findAll(query.articleId);
+    }
+
+    @Get('/u')
+    findAllByUserId(@Query() query: { userId: number}) {
+        return this.commentService.findAllByUserId(query.userId);
     }
 
     @Get(':id')

@@ -30,8 +30,12 @@ export class CommentService {
         return await qb.leftJoinAndSelect('c.user', 'user')
             .leftJoinAndSelect('c.article', 'article')
             .select(['c', 'user', 'article.id', "article.title"])
-            .orderBy({'c.createdAt': "DESC"})
+            .orderBy({'c.createdAt': 'DESC'})
             .getMany()
+    }
+
+    async findAllByUserId(userId: number) {
+        return this.repository.find({where: {user: userId}, relations: ['article','user']})
     }
 
     findOne(id: number) {
@@ -45,13 +49,14 @@ export class CommentService {
     remove(id: number) {
         return this.repository.delete(id);
     }
+
     async removeByArticle(id: number) {
         const arr = await this.repository.createQueryBuilder('c')
-            .where('c.articleId = :id',{id})
+            .where('c.articleId = :id', {id})
             .getMany()
-        await arr.forEach(el=>this.remove(el.id))
+        await arr.forEach(el => this.remove(el.id))
         return {
-            status:"success"
+            status: "success"
         }
     }
 }
