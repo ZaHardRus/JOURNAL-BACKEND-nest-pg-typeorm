@@ -1,9 +1,10 @@
 import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
 import {CreateCommentDto} from './dto/create-comment.dto';
 import {UpdateCommentDto} from './dto/update-comment.dto';
-import {InjectRepository} from '@nestjs/typeorm';
 import {CommentEntity} from './entities/comment.entity';
-import {Repository} from 'typeorm';
+import {PaginationCommentDto} from "./dto/pagination-comment.dto";
 
 @Injectable()
 export class CommentService {
@@ -34,8 +35,16 @@ export class CommentService {
             .getMany()
     }
 
-    async findAllByUserId(userId: number) {
-        return this.repository.find({where: {user: userId}, relations: ['article','user']})
+    async findAllByUserId(query: PaginationCommentDto) {
+        const take = query.take || 10
+        const page = query.page || 1;
+        const skip = (page - 1) * take;
+
+        return this.repository.findAndCount({
+            where: {user: query.userId}, relations: ['article', 'user'],
+            take: take,
+            skip: skip,
+        })
     }
 
     findOne(id: number) {

@@ -3,11 +3,9 @@ import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {InjectRepository} from '@nestjs/typeorm';
 import {UserEntity} from './entities/user.entity';
-import {ILike, Like, Repository} from 'typeorm';
+import {ILike, Repository} from 'typeorm';
 import {LoginUserDto} from './dto/login-user.dto';
 import {FollowUserDto} from './dto/follow-user.dto';
-import {SearchUserDto} from './dto/search-user.dto';
-import {ArticleEntity} from "../article/entities/article.entity";
 import {PaginationUsersAllDto} from "./dto/pagination-usersAll.dto";
 
 @Injectable()
@@ -51,12 +49,12 @@ export class UsersService {
         return await this.repository
             .createQueryBuilder('u')
             .where('u.id = :id', {id})
-            .leftJoinAndMapMany(
-                'u.articles',
-                ArticleEntity,
-                'article',
-                'article.userId = u.id'
-            )
+            // .leftJoinAndMapMany(
+            //     'u.articles',
+            //     ArticleEntity,
+            //     'article',
+            //     'article.userId = u.id'
+            // )
             .getOne();
     }
 
@@ -134,11 +132,11 @@ export class UsersService {
 
         const user = await this.repository.findOne(+id);
         const ids = user.followers;
-        const followers =  await this.repository.findByIds(ids, {
+        const followers = await this.repository.findByIds(ids, {
             take: take,
             skip: skip
         })
-        return [followers,ids.length]
+        return [followers, ids.length]
     }
 
     async getFollowing(id: number, query: PaginationUsersAllDto) {
@@ -152,7 +150,7 @@ export class UsersService {
             take: take,
             skip: skip
         })
-        return [following,ids.length]
+        return [following, ids.length]
     }
 
     remove(id: number) {

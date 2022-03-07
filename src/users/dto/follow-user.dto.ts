@@ -1,7 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
-import { CreateArticleDto } from '../../article/dto/create-article.dto';
+import {PartialType} from '@nestjs/mapped-types';
+import {CreateUserDto} from './create-user.dto';
 
 export class FollowUserDto extends PartialType(CreateUserDto) {
-  id: number;
+    id: number;
 }

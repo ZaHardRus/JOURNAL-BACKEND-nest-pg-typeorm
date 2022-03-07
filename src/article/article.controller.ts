@@ -3,10 +3,9 @@ import {ArticleService} from './article.service';
 import {CreateArticleDto} from './dto/create-article.dto';
 import {UpdateArticleDto} from './dto/update-article.dto';
 import {searchArticleDto} from './dto/search-article.dto';
-import {PaginationArticleDto} from './dto/pagination-article.dto';
+import {PaginationArticleAllDto} from "./dto/pagination-articleAll.dto";
 import {JwtAuthGuard} from 'src/auth/guard/jwt-auth.guard';
 import {User} from "../Decorators/user.decorator";
-import {PaginationArticleAllDto} from "./dto/pagination-articleAll.dto";
 
 @Controller('articles')
 export class ArticleController {
@@ -63,21 +62,14 @@ export class ArticleController {
     }
 
     @Patch(':id/like')
-    //todo:проверить можно ли follow + dto
     @UseGuards(JwtAuthGuard)
     like(@User() userId: number, @Param('id') articleId: string) {
         return this.articleService.like(+articleId, userId);
     }
 
     @Patch(':id/dislike')
-    //todo:проверить можно ли follow + dto
     @UseGuards(JwtAuthGuard)
     dislike(@User() userId: number, @Param('id') articleId: string) {
         return this.articleService.dislike(+articleId, userId);
     }
-
-    // @Get(`/popular`)
-    // getPopular(@Query('skip') skip:number) {
-    //   return this.articleService.popular(skip);
-    // }
 }

@@ -1,5 +1,5 @@
-import {ForbiddenException, Inject, Injectable} from '@nestjs/common';
-import {UploadApiErrorResponse, UploadApiResponse, v2} from 'cloudinary';
+import {Inject, Injectable} from '@nestjs/common';
+import {UploadApiErrorResponse, v2} from 'cloudinary';
 import toStream = require('buffer-to-stream');
 
 @Injectable()
@@ -16,7 +16,7 @@ export class CloudinaryService {
                 }
                 resolve(result);
             });
-            if(upload){
+            if (upload) {
                 toStream(file.buffer).pipe(upload);
             }
 

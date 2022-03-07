@@ -1,9 +1,10 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards,} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards} from '@nestjs/common';
 import {CommentService} from './comment.service';
 import {CreateCommentDto} from './dto/create-comment.dto';
 import {UpdateCommentDto} from './dto/update-comment.dto';
 import {User} from 'src/Decorators/user.decorator';
 import {JwtAuthGuard} from 'src/auth/guard/jwt-auth.guard';
+import {PaginationCommentDto} from "./dto/pagination-comment.dto";
 
 @Controller('comments')
 export class CommentController {
@@ -17,13 +18,13 @@ export class CommentController {
     }
 
     @Get()
-    findAll(@Query() query: { articleId: number}) {
+    findAll(@Query() query: { articleId: number }) {
         return this.commentService.findAll(query.articleId);
     }
 
     @Get('/u')
-    findAllByUserId(@Query() query: { userId: number}) {
-        return this.commentService.findAllByUserId(query.userId);
+    findAllByUserId(@Query() query: PaginationCommentDto) {
+        return this.commentService.findAllByUserId(query);
     }
 
     @Get(':id')

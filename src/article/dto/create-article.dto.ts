@@ -1,13 +1,13 @@
 import {IsArray, IsOptional, IsString} from "class-validator";
 
 export class CreateArticleDto {
-  @IsString()
-  title: string;
+    @IsString()
+    title: string;
 
-  @IsArray()
-  body: Array<any>;
+    @IsArray()
+    body: Array<any>;
 
-  @IsOptional()
-  @IsArray()
-  tags: string;
+    @IsOptional()
+    @IsArray()
+    tags: string;
 }

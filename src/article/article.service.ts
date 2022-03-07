@@ -1,15 +1,13 @@
-import {ForbiddenException, Inject, Injectable, NotFoundException} from '@nestjs/common';
+import {ForbiddenException, Injectable, NotFoundException} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Like, Repository} from 'typeorm';
 import {CreateArticleDto} from './dto/create-article.dto';
 import {UpdateArticleDto} from './dto/update-article.dto';
-import {InjectRepository} from '@nestjs/typeorm';
-import {ArticleEntity} from './entities/article.entity';
-import {Like, Repository} from 'typeorm';
 import {searchArticleDto} from './dto/search-article.dto';
-import {PaginationArticleDto} from './dto/pagination-article.dto';
-import {CommentEntity} from "../comment/entities/comment.entity";
-import {CommentService} from "../comment/comment.service";
-import {UserEntity} from "../users/entities/user.entity";
 import {PaginationArticleAllDto} from "./dto/pagination-articleAll.dto";
+import {ArticleEntity} from './entities/article.entity';
+import {UserEntity} from "../users/entities/user.entity";
+import {CommentService} from "../comment/comment.service";
 
 @Injectable()
 export class ArticleService {
@@ -59,7 +57,7 @@ export class ArticleService {
             skip: skip,
             relations: ['user'],
         });
-        return data
+        return [data, count]
     }
 
     async findOne(id: number) {

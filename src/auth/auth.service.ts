@@ -3,14 +3,12 @@ import {JwtService} from '@nestjs/jwt';
 import {UsersService} from '../users/users.service';
 import {UserEntity} from '../users/entities/user.entity';
 import {CreateUserDto} from '../users/dto/create-user.dto';
-import {use} from 'passport';
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
-        private jwtService: JwtService,
-    ) {
+        private jwtService: JwtService) {
     }
 
     generateJwtToken(data: { id: number; email: string }) {
@@ -18,7 +16,7 @@ export class AuthService {
         return this.jwtService.sign(payload);
     }
 
-    async validateUser(email: string, password: string): Promise<any> {
+    async validateUser(email: string, password: string) {
         const user = await this.usersService.findByCond({email, password});
         if (user && user.password === password) {
             const {password, ...result} = user;
@@ -40,7 +38,7 @@ export class AuthService {
             const {password, ...user} = await this.usersService.create(dto);
             return user;
         } catch (e) {
-            throw new ForbiddenException('Sorry((');
+            throw new ForbiddenException('registration failed');
         }
     }
 }
