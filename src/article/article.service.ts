@@ -1,6 +1,6 @@
 import {ForbiddenException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Like, Repository} from 'typeorm';
+import {ILike, Repository} from 'typeorm';
 import {CreateArticleDto} from './dto/create-article.dto';
 import {UpdateArticleDto} from './dto/update-article.dto';
 import {searchArticleDto} from './dto/search-article.dto';
@@ -38,7 +38,7 @@ export class ArticleService {
         const keyword = query.keyword || ''
 
         return this.repository.findAndCount({
-            where: {title: Like('%' + keyword + '%')}, order: {createdAt: "DESC"},
+            where: {title: ILike('%' + keyword + '%')}, order: {createdAt: "DESC"},
             take: take,
             skip: skip,
         });
