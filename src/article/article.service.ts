@@ -17,8 +17,7 @@ export class ArticleService {
         private commentsService: CommentService,
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>
-    ) {
-    }
+    ) {}
 
     create(dto: CreateArticleDto, userId) {
         const description = dto.body.find(el => el.type === 'paragraph')?.data.text
@@ -38,7 +37,8 @@ export class ArticleService {
         const keyword = query.keyword || ''
 
         return this.repository.findAndCount({
-            where: {title: ILike('%' + keyword + '%')}, order: {createdAt: "DESC"},
+            where: {title: ILike('%' + keyword + '%')},
+            order: {createdAt: "DESC"},
             take: take,
             skip: skip,
         });
@@ -95,7 +95,6 @@ export class ArticleService {
         qb.limit(dto.limit || 10);
         qb.offset((+dto.limit * +dto.page) - +dto.limit || 0);
         qb.leftJoinAndSelect('sa.user', 'user');
-
         if (dto.body) {
             qb.andWhere(`sa.body ILIKE :body`);
         }
