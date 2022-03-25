@@ -13,7 +13,7 @@ async function bootstrap() {
         allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization,authorization, X-Forwarded-for'
     })
     app.useGlobalPipes(new ValidationPipe());
-    await app.listen(7070);
+    await app.listen(process.env.PORT || 5000);
 }
 
 bootstrap();
