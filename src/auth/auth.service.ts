@@ -4,6 +4,8 @@ import {UsersService} from '../users/users.service';
 import {UserEntity} from '../users/entities/user.entity';
 import {CreateUserDto} from '../users/dto/create-user.dto';
 
+const bcrypt = require('bcrypt');
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -16,9 +18,11 @@ export class AuthService {
         return this.jwtService.sign(payload);
     }
 
-    async validateUser(email: string, password: string) {
-        const user = await this.usersService.findByCond({email, password});
-        if (user && user.password === password) {
+    async validateUser(email: string, passwordDTO: string) {
+        const user = await this.usersService.findByCond({email})
+        const decodePassword = await bcrypt.compare(passwordDTO, user.password)
+
+        if (user && decodePassword) {
             const {password, ...result} = user;
             return result;
         }
@@ -35,9 +39,15 @@ export class AuthService {
 
     async registration(dto: CreateUserDto) {
         try {
-            const {password, ...user} = await this.usersService.create(dto);
+            const hashedPassword = await bcrypt.hash(dto.password, 10)
+            const {password, ...user} = await this.usersService.create({
+                fullName: dto.fullName,
+                email: dto.email,
+                password: hashedPassword
+            });
             return user;
         } catch (e) {
+            console.log(e)
             throw new ForbiddenException('registration failed');
         }
     }
